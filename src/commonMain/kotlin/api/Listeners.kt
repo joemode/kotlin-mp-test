@@ -10,6 +10,9 @@ interface UserListener {
 }
 
 interface ReservationListener {
+    // Initialization Callbacks
     fun customerCallback(manager: CustomerReservationManager)
     fun restaurantCallback(manager: RestaurantReservationManager)
+
+    // API Callbacks
 }

@@ -3,6 +3,8 @@ plugins {
 }
 repositories {
     mavenCentral()
+    jcenter()
+    google()
 }
 group 'com.example.mptest'
 version '0.0.1'
@@ -25,6 +27,7 @@ kotlin {
         commonMain {
             dependencies {
                 implementation 'org.jetbrains.kotlin:kotlin-stdlib-common'
+                implementation 'io.ktor:ktor-client-core:1.1.2'
             }
         }
         commonTest {
@@ -36,6 +39,7 @@ kotlin {
         jvmMain {
             dependencies {
                 implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
+                implementation 'io.ktor:ktor-client-android:1.1.2'
             }
         }
         jvmTest {
@@ -55,6 +59,9 @@ kotlin {
             }
         }
         mingwMain {
+            dependencies {
+                implementation 'io.ktor:ktor-client-ios:1.1.2'
+            }
         }
         mingwTest {
         }

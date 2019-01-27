@@ -1,7 +1,10 @@
 package api
 
 // TODO Thread independent singleton, so that SDK consumer cannot impersonate multiple UserTypes
+// TODO Rename, too easily confused with user registration feature. AuthorizationManager
 class RegistrationManager(internal val type: UserType) {
+
+    constructor(): this(UserType.CUSTOMER)
 
     @Deprecated("Use default constructor")
     constructor (init: Int,
