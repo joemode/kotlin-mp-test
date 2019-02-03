@@ -1,35 +1,39 @@
 package api
 
-import api.reservation.CustomerReservationManager
-import api.reservation.RestaurantReservationManager
-import api.user.UserManager
+import api.account.BackendAccountAgent
+import api.account.MerchantAccountAgent
+import api.account.UserAccountAgent
+import api.account.base.AccountAgent
+import api.base.OnInitialized
+import api.reservation.BackendReservationAgent
+import api.reservation.UserReservationAgent
+import api.reservation.MerchantReservationAgent
+import api.reservation.base.ReservationAgent
 
 internal class InitializationFactory(private val agent: InitializationAgent) {
 
-    fun generateUserAgent(value: Int): UserManager {
-        return UserManager(value)
-    }
-
-    fun generateReservationAgent(listener: ReservationListener) {
-        when(agent.userType) {
-            UserType.CUSTOMER -> listener.customerCallback(CustomerReservationManager())
-            else -> listener.restaurantCallback(RestaurantReservationManager())
+    internal fun generateAgent(listener: OnInitialized<*, *, *>) {
+        when (listener) {
+            is ReservationAgent.OnReservationAgentInitialized -> generateReservationAgent(listener)
+            is AccountAgent.OnAccountAgentInitialized -> generateAccountAgent(listener)
+            else -> listener.initializationError("Parameter was an unknown subclass of OnInitialized, please use provided OnInitialized subclasses")
+//            else -> IllegalArgumentException("Parameter was an unknown subclass of OnInitialized, please use provided OnInitialized subclasses")
         }
     }
-    /**
-     * vinternal class ManagerFactory(private val manager: RegistrationManager) {
 
-    fun generateUserManager(value: Int): UserManager {
-    return UserManager(value)
-    }
-
-    fun generateReservationManager(listener: ReservationListener) {
-    when (manager.type) {
-    UserType.CUSTOMER -> listener.customerCallback(CustomerReservationManager())
-    else -> listener.restaurantCallback(RestaurantReservationManager())
-    }
+    private fun generateAccountAgent(listener: AccountAgent.OnAccountAgentInitialized) {
+        when (agent.userType) {
+            ClientType.USER -> listener.userAgentInitialized(UserAccountAgent())
+            ClientType.MERCHANT -> listener.merchantAgentInitialized(MerchantAccountAgent())
+            ClientType.BACKEND -> listener.backendAgentInitialized(BackendAccountAgent())
+        }
     }
 
+    private fun generateReservationAgent(listener: ReservationAgent.OnReservationAgentInitialized) {
+        when (agent.userType) {
+            ClientType.USER -> listener.userAgentInitialized(UserReservationAgent())
+            ClientType.MERCHANT -> listener.merchantAgentInitialized(MerchantReservationAgent())
+            ClientType.BACKEND -> listener.backendAgentInitialized(BackendReservationAgent())
+        }
     }
-     */
 }
