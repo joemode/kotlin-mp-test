@@ -9,6 +9,8 @@ import api.reservation.BackendReservationAgent
 import api.reservation.UserReservationAgent
 import api.reservation.MerchantReservationAgent
 import api.reservation.base.ReservationAgent
+import api.search.UserSearchAgent
+import api.search.UserSearchListener
 
 internal class InitializationFactory(private val agent: InitializationAgent) {
 
@@ -16,8 +18,8 @@ internal class InitializationFactory(private val agent: InitializationAgent) {
         when (listener) {
             is ReservationAgent.OnReservationAgentInitialized -> generateReservationAgent(listener)
             is AccountAgent.OnAccountAgentInitialized -> generateAccountAgent(listener)
+            is UserSearchAgent.OnSearchAgentInitialized -> generateAgent(listener)
             else -> listener.initializationError("Parameter was an unknown subclass of OnInitialized, please use provided OnInitialized subclasses")
-//            else -> IllegalArgumentException("Parameter was an unknown subclass of OnInitialized, please use provided OnInitialized subclasses")
         }
     }
 
@@ -34,6 +36,14 @@ internal class InitializationFactory(private val agent: InitializationAgent) {
             ClientType.USER -> listener.userAgentInitialized(UserReservationAgent())
             ClientType.MERCHANT -> listener.merchantAgentInitialized(MerchantReservationAgent())
             ClientType.BACKEND -> listener.backendAgentInitialized(BackendReservationAgent())
+        }
+    }
+
+    private fun generateSearchAgent(listener: UserSearchAgent.OnSearchAgentInitialized) {
+        when (agent.userType) {
+            ClientType.USER -> listener.userAgentInitialized(UserSearchAgent())
+            ClientType.MERCHANT -> listener.initializationError("No MerchantSearchAgent")
+            ClientType.BACKEND -> listener.initializationError("No BackendSearchAgent()")
         }
     }
 }
